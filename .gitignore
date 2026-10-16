@@ -22,7 +22,11 @@ Logs/
 *.iso
 *.qcow2
 
-# Secrets and lab credentials
+# Secrets and lab credentials (catch-alls so a differently named file is still ignored)
+*password*
+*passwd*
+*credential*
+*creds*
 .env
 *.env
 secrets/
