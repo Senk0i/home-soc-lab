@@ -37,6 +37,11 @@ function New-PfSenseVM {
         & $vbm modifyvm $Name "--nic$n" intnet "--intnet$n" $Networks[$i] "--nictype$n" 82540EM "--cableconnected$n" on
     }
 
+    # Temporary NAT adapter: the Netgate Installer downloads pfSense over the internet.
+    # Disable it (VM Settings > Network > uncheck "Enable Network Adapter") after install.
+    $natNic = $Networks.Count + 1
+    & $vbm modifyvm $Name "--nic$natNic" nat "--nictype$natNic" 82540EM "--cableconnected$natNic" on
+
     $disk = Join-Path $BaseFolder "$Name\$Name.vdi"
     & $vbm createmedium disk --filename $disk --size 16384 --variant Standard | Out-Null
     & $vbm storagectl $Name --name SATA --add sata --controller IntelAhci
