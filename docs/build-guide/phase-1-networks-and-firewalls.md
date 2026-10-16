@@ -45,9 +45,13 @@ VirtualBox 7.2. Each zone is a named **internal network**. Internal networks liv
 | Networks and VMs created | Done |
 | pfSense-A installed, interfaces and IPs set (WAN 192.168.1.1, DMZ 192.168.14.1, transit 192.168.20.1) | Done, snapshot `01-installed-ips-set` |
 | pfSense-B installed, interfaces and IPs set (WAN 192.168.20.2 with gateway 192.168.20.1, SOC 192.168.11.1, AD 192.168.30.1) | Done, snapshot `01-installed-ips-set` |
-| Static routes between the firewalls | To do (needs the web UI) |
-| Firewall rules (default deny, DMZ isolation) | To do (needs the web UI) |
-| Verification tests and `01-phase1-done` snapshot | To do |
+| Kali installed (2 vCPU, 4 GB), static IP 192.168.1.150/24, gateway 192.168.1.1 | Done |
+| Static routes on pfSense-A to SOC and AD via pfSense-B | Done (`configs/pfsense/pfsense-a-baseline.php`) |
+| Firewall rules (default deny, DMZ isolation) on both firewalls | Done (`configs/pfsense/pfsense-*-baseline.php`) |
+| Verification tests | Done, see results below |
+| `02-phase1-baseline` snapshots | Done |
+
+The routes and rules were applied from the firewall consoles with PHP scripts instead of the web UI, so they are reproducible from this repo. `scripts/push-file-to-vm.ps1` types a script into a VM console, with no network needed.
 
 Install notes:
 - The installer defaults to ZFS. Use `t`, pick `stripe`, select `ada0` with space, then choose `>>> Install`.
@@ -61,6 +65,26 @@ Install notes:
 - A host in the DMZ cannot reach `192.168.11.x` or `192.168.30.x`.
 - A host on the attacker network can reach the DMZ but not the transit, SOC, or AD networks.
 - Nothing in the lab can reach the home LAN. From any lab VM, `ping` to the home router fails.
+
+## Verification results
+
+Run with ICMP echo from Kali. "Blocked" means no reply, as designed. Both firewalls ping each other over the transit network with 0% loss.
+
+| From | Target | Result | Expected |
+|---|---|---|---|
+| Kali on DMZ (192.168.14.50) | 192.168.14.1 (DMZ firewall) | Reachable | Reachable |
+| Kali on DMZ | 192.168.20.1, 192.168.20.2 (transit) | Blocked | Blocked |
+| Kali on DMZ | 192.168.11.1 (SOC), 192.168.30.1 (AD) | Blocked | Blocked |
+| Kali on attacker net (192.168.1.150) | 192.168.1.1 (edge firewall) | Reachable | Reachable |
+| Kali on attacker net | 192.168.14.1 (DMZ) | Reachable | Reachable |
+| Kali on attacker net | 192.168.20.1, 192.168.20.2 (transit) | Blocked | Blocked |
+| Kali on attacker net | 192.168.11.1 (SOC), 192.168.30.1 (AD) | Blocked | Blocked |
+| Kali | 8.8.8.8, home router range, host-only adapter | Blocked | Blocked |
+| pfSense-A | 192.168.11.1 (pfSense-B SOC address) | No reply | Blocked by the inner firewall |
+
+All VM network adapters are VirtualBox internal networks only: no bridged, NAT or host-only adapters exist on any lab VM.
+
+Not yet tested, because the hosts do not exist yet: DMZ agent logs to Wazuh (192.168.11.10, ports 1514 to 1515), SOC to DMZ, AD to SOC. Those are checked in Phases 2 to 4.
 
 ## Troubleshooting
 

@@ -30,7 +30,7 @@ The lab is fully isolated from the host's home network. Nothing is bridged and n
 | Phase | Description | Status |
 |---|---|---|
 | 0 | Host check, repo, resource plan | Done |
-| 1 | Virtual networks + pfSense firewalls | In progress |
+| 1 | Virtual networks + pfSense firewalls + Kali | Done |
 | 2 | Active Directory + Sysmon | Not started |
 | 3 | Wazuh SIEM + agents | Not started |
 | 4 | Kali + DMZ (DVWA, honeypot) | Not started |
