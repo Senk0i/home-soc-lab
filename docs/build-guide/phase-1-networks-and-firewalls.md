@@ -38,6 +38,23 @@ VirtualBox 7.2. Each zone is a named **internal network**. Internal networks liv
 8. **Firewall rules** (see [architecture.md](../architecture.md), "Firewall intent"). Default deny, then allow only what the design needs.
 9. **Verify** (see below), then snapshot both VMs as `01-phase1-done`.
 
+## Progress
+
+| Step | Status |
+|---|---|
+| Networks and VMs created | Done |
+| pfSense-A installed, interfaces and IPs set (WAN 192.168.1.1, DMZ 192.168.14.1, transit 192.168.20.1) | Done, snapshot `01-installed-ips-set` |
+| pfSense-B installed, interfaces and IPs set (WAN 192.168.20.2 with gateway 192.168.20.1, SOC 192.168.11.1, AD 192.168.30.1) | Done, snapshot `01-installed-ips-set` |
+| Static routes between the firewalls | To do (needs the web UI) |
+| Firewall rules (default deny, DMZ isolation) | To do (needs the web UI) |
+| Verification tests and `01-phase1-done` snapshot | To do |
+
+Install notes:
+- The installer defaults to ZFS. Use `t`, pick `stripe`, select `ada0` with space, then choose `>>> Install`.
+- Power the VM off after the installer says "Complete", eject the ISO while powered off, then boot. Ejecting the ISO from a running installer breaks it.
+- The console menu auto-assigns only WAN and LAN. Assign `em2` as OPT1 with option 1.
+- By default pfSense blocks inbound traffic on WAN and on new interfaces, so pings between the firewalls fail until rules are added.
+
 ## Verification
 
 - pfSense-A can ping `192.168.20.2`, and pfSense-B can ping `192.168.20.1`.
