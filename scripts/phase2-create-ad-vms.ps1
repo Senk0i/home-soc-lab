@@ -38,7 +38,8 @@ function New-LabVm {
     & $vbm modifyvm $Name --memory 4096 --cpus 2 --boot1 dvd --boot2 disk --boot3 none --boot4 none `
         --graphicscontroller vboxsvga --vram 128 --audio-enabled off `
         --nic1 intnet --intnet1 $Network --nictype1 82540EM --cableconnected1 on `
-        --clipboard-mode disabled --draganddrop disabled
+        --clipboard-mode disabled --draganddrop disabled `
+        --usb-xhci on --mouse usbtablet   # absolute pointer: a PS/2 mouse drifts and gets captured
 
     if ($Windows11) {
         # Windows 11 needs UEFI, Secure Boot and a TPM 2.0
