@@ -20,7 +20,13 @@ Remove-NetRoute -InterfaceIndex $nic.ifIndex -DestinationPrefix '0.0.0.0/0' -Con
 New-NetIPAddress -InterfaceIndex $nic.ifIndex -IPAddress $ip -PrefixLength 24 -DefaultGateway $gateway | Out-Null
 Set-DnsClientServerAddress -InterfaceIndex $nic.ifIndex -ServerAddresses $dns
 
-if (-not (Test-Connection $dns -Count 2 -Quiet)) { throw "Cannot reach the domain controller at $dns" }
+# The adapter needs a few seconds after the address change; retry before giving up.
+$reachable = $false
+foreach ($i in 1..15) {
+    try { if (Test-Connection $dns -Count 1 -Quiet -ErrorAction Stop) { $reachable = $true; break } } catch { }
+    Start-Sleep -Seconds 4
+}
+if (-not $reachable) { throw "Cannot reach the domain controller at $dns" }
 Resolve-DnsName $domain -ErrorAction Stop | Out-Null
 
 Add-Computer -DomainName $domain -NewName 'WIN11-CLIENT' `
