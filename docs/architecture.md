@@ -52,4 +52,4 @@ flowchart TB
 
 ## Virtual network mapping
 
-Filled in after the hypervisor decision in [build-guide/phase-0-host-check.md](build-guide/phase-0-host-check.md).
+Hypervisor: VirtualBox. Each zone is a named internal network (`lab-attacker`, `lab-dmz`, `lab-transit`, `lab-soc`, `lab-ad`). See [build-guide/phase-1-networks-and-firewalls.md](build-guide/phase-1-networks-and-firewalls.md).

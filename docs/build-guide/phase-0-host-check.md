@@ -30,11 +30,11 @@ The Windows hypervisor is already active on this machine, which VMware Workstati
 | VMware Workstation (free personal use) | Easy custom virtual networks, `vmrun` scripting, good snapshots | Runs on top of the Windows hypervisor, so somewhat slower |
 | Hyper-V (built into Windows 11 Pro) | Native speed, no extra install | Networking is clunkier, no free nested-network UI, scripting is PowerShell only |
 
-Decision: _to be recorded here_.
+Decision: **VirtualBox 7.2.20**, installed via winget. VMware Workstation requires a Broadcom account to download, and VirtualBox gives named internal networks (never touching the host LAN) plus a fully scriptable `VBoxManage` CLI.
 
 ## Hypervisor-specific network mapping
 
-_To be added in Phase 1 after the decision._
+See [phase-1-networks-and-firewalls.md](phase-1-networks-and-firewalls.md).
 
 ## Fixes before Phase 1
 
