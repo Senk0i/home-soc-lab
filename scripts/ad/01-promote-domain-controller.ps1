@@ -24,7 +24,13 @@ Remove-NetRoute -InterfaceIndex $nic.ifIndex -DestinationPrefix '0.0.0.0/0' -Con
 New-NetIPAddress -InterfaceIndex $nic.ifIndex -IPAddress $ip -PrefixLength $prefix -DefaultGateway $gateway | Out-Null
 Set-DnsClientServerAddress -InterfaceIndex $nic.ifIndex -ServerAddresses '127.0.0.1'
 
-if ($env:COMPUTERNAME -ne 'DC01') { Rename-Computer -NewName 'DC01' -Force }
+# Rename first and reboot. Run this script again afterwards to promote.
+if ($env:COMPUTERNAME -ne 'DC01') {
+    Rename-Computer -NewName 'DC01' -Force
+    Write-Host 'Renamed to DC01. Rebooting. Sign in and run this script again to promote.'
+    Restart-Computer -Force
+    return
+}
 
 Install-WindowsFeature AD-Domain-Services, DNS -IncludeManagementTools | Out-Null
 
