@@ -29,10 +29,11 @@ No product keys are needed. The Server evaluation runs for 180 days.
 1. **Create the VMs:** `scripts/phase2-create-ad-vms.ps1 -ServerIso <iso> -ClientIso <iso>`. It builds both VMs on `lab-ad` and snapshots them blank. Windows 11 gets UEFI, Secure Boot and a virtual TPM 2.0.
 2. **Install Windows Server on DC01.** Choose "Windows Server 2025 Standard Evaluation (Desktop Experience)", custom install, the 60 GB disk. Set the Administrator password during setup. Use a lab-only password and keep it out of this repo.
 3. **Promote the domain controller:** in an elevated PowerShell on DC01, run `scripts/ad/01-promote-domain-controller.ps1`. It sets 192.168.30.10, installs AD DS and DNS, and creates the forest. It asks for a DSRM password and reboots.
-4. **Create OUs and users:** after the reboot, sign in as `SOCLAB\Administrator` and run `scripts/ad/02-create-ous-and-users.ps1`. It asks once for a lab password for the test users.
-5. **Install Windows 11 on WIN11-CLIENT.** Pick Windows 11 Pro. Use a local account (the lab has no internet, so skip the Microsoft account step).
-6. **Join the domain:** in an elevated PowerShell on the client, run `scripts/ad/03-join-client-to-domain.ps1`. It asks for domain administrator credentials.
-7. **Install Sysmon on both machines** (see below), then snapshot both as `01-phase2-domain`.
+4. **Optional, deliberately insecure:** after the reboot, sign in as `SOCLAB\Administrator` and run `scripts/ad/01b-weak-lab-auth-policy.ps1`. It turns off password complexity and account lockout so test users can have simple passwords and brute-force practice is not cut short. Lab only.
+5. **Create OUs and users:** run `scripts/ad/02-create-ous-and-users.ps1`. It asks once for a lab password for the test users.
+6. **Install Windows 11 on WIN11-CLIENT.** Pick Windows 11 Pro. Use a local account (the lab has no internet, so skip the Microsoft account step).
+7. **Join the domain:** in an elevated PowerShell on the client, run `scripts/ad/03-join-client-to-domain.ps1`. It asks for domain administrator credentials.
+8. **Install Sysmon on both machines** (see below), then snapshot both as `01-phase2-domain`.
 
 ## Sysmon
 
