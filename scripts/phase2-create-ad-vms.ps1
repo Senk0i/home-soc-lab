@@ -1,14 +1,14 @@
 <#
 Phase 2: create the Active Directory VMs on the isolated lab-ad network.
 
-  DC01          Windows Server 2022   2 vCPU  4 GB  60 GB   192.168.30.10
+  DC01          Windows Server 2025   2 vCPU  4 GB  60 GB   192.168.30.10
   WIN11-CLIENT  Windows 11            2 vCPU  4 GB  64 GB   192.168.30.20
 
 Both VMs attach to the internal network "lab-ad" only. Addresses are set
 inside Windows after install (see docs/build-guide/phase-2-active-directory.md).
 
 Usage:
-  .\phase2-create-ad-vms.ps1 -ServerIso ".\isos\<server-2022-eval>.iso" -ClientIso ".\isos\<windows-11>.iso"
+  .\phase2-create-ad-vms.ps1 -ServerIso ".\isos\<server-2025-eval>.iso" -ClientIso ".\isos\<windows-11>.iso"
 #>
 param(
     [Parameter(Mandatory = $true)][string]$ServerIso,
@@ -57,7 +57,7 @@ function New-LabVm {
     Write-Host "$Name ready."
 }
 
-New-LabVm -Name "DC01" -OsType "Windows2022_64" -Iso $ServerIso -DiskMB 61440 -Windows11 $false
+New-LabVm -Name "DC01" -OsType "Windows2025_64" -Iso $ServerIso -DiskMB 61440 -Windows11 $false
 New-LabVm -Name "WIN11-CLIENT" -OsType "Windows11_64" -Iso $ClientIso -DiskMB 65536 -Windows11 $true
 
 Write-Host ""

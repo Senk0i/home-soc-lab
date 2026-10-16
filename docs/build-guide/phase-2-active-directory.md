@@ -6,7 +6,7 @@ Goal: a small Windows domain (`soclab.local`) on the isolated AD network, so the
 
 | Host | Role | Address | vCPU / RAM / disk |
 |---|---|---|---|
-| DC01 | Windows Server 2022: domain controller + DNS | 192.168.30.10/24 | 2 / 4 GB / 60 GB |
+| DC01 | Windows Server 2025: domain controller + DNS | 192.168.30.10/24 | 2 / 4 GB / 60 GB |
 | WIN11-CLIENT | Windows 11 domain-joined workstation | 192.168.30.20/24 | 2 / 4 GB / 64 GB |
 
 Both attach only to the internal network `lab-ad`. The gateway is pfSense-B (192.168.30.1). The client uses the DC (192.168.30.10) as its DNS server.
@@ -17,15 +17,17 @@ Domain: `soclab.local`, NetBIOS name `SOCLAB`.
 
 Download two ISOs and save them in this project's git-ignored `isos/` folder:
 
-1. **Windows Server 2022 Evaluation** (ISO, 64-bit, English) from the Microsoft Evaluation Center. Choose the Desktop Experience edition when installing.
+1. **Windows Server 2025 Evaluation** (ISO, 64-bit, English) from the Microsoft Evaluation Center. Choose the Desktop Experience edition when installing.
 2. **Windows 11 ISO** (multi-edition, x64, English) from Microsoft's Windows 11 download page. Choose **Windows 11 Pro** at setup: it can join a domain, and it runs unactivated for lab use.
 
 No product keys are needed. The Server evaluation runs for 180 days.
 
+**Activation window:** Microsoft requires the Server 2025 evaluation to be activated online within 10 days, or it shuts itself down. The lab is isolated, so during the first days give DC01 a temporary NAT adapter (see Sysmon below for the commands), let it activate, then remove the adapter again. Do the same window to install Sysmon.
+
 ## Steps
 
 1. **Create the VMs:** `scripts/phase2-create-ad-vms.ps1 -ServerIso <iso> -ClientIso <iso>`. It builds both VMs on `lab-ad` and snapshots them blank. Windows 11 gets UEFI, Secure Boot and a virtual TPM 2.0.
-2. **Install Windows Server on DC01.** Choose "Windows Server 2022 Standard Evaluation (Desktop Experience)", custom install, the 60 GB disk. Set the Administrator password during setup. Use a lab-only password and keep it out of this repo.
+2. **Install Windows Server on DC01.** Choose "Windows Server 2025 Standard Evaluation (Desktop Experience)", custom install, the 60 GB disk. Set the Administrator password during setup. Use a lab-only password and keep it out of this repo.
 3. **Promote the domain controller:** in an elevated PowerShell on DC01, run `scripts/ad/01-promote-domain-controller.ps1`. It sets 192.168.30.10, installs AD DS and DNS, and creates the forest. It asks for a DSRM password and reboots.
 4. **Create OUs and users:** after the reboot, sign in as `SOCLAB\Administrator` and run `scripts/ad/02-create-ous-and-users.ps1`. It asks once for a lab password for the test users.
 5. **Install Windows 11 on WIN11-CLIENT.** Pick Windows 11 Pro. Use a local account (the lab has no internet, so skip the Microsoft account step).
