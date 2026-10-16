@@ -52,3 +52,11 @@ node_modules/
 
 # Installers downloaded on the host and delivered to VMs via the tools ISO
 tools/
+
+# Terraform / Proxmox (Phase 10): state, variables and tokens never get committed
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+*.auto.tfvars
+crash.log

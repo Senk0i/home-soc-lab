@@ -43,6 +43,7 @@ The lab is fully isolated from the host's home network. Nothing is bridged and n
 | 7 | Shuffle SOAR automation | Not started |
 | 8 | OpenVPN admin path (optional Elastic) | Not started |
 | 9 | Polish, demo, write-up | Not started |
+| 10 | Lab v2: rebuild on Proxmox with infrastructure as code (see [plan](docs/build-guide/phase-10-proxmox-lab-v2.md)) | Planned |
 
 ## Repo layout
 
