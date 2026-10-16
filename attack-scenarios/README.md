@@ -1,0 +1,16 @@
+# Attack scenarios
+
+Run each scenario only inside the isolated lab. Snapshot the target first. For each one, record the expected detection, then the actual result in an incident report.
+
+| # | Scenario | ATT&CK | Target | Expected detection | Status |
+|---|---|---|---|---|---|
+| 1 | SSH/RDP brute force | T1110 | DMZ host, AD client | Wazuh auth-failure rules | Planned |
+| 2 | Encoded PowerShell execution | T1059.001 | Windows client | Sysmon event 1 + custom rule | Planned |
+| 3 | Scheduled task persistence | T1053.005 | Windows client | Sysmon / Windows event 4698 | Planned |
+| 4 | Credential dumping (LSASS access) | T1003.001 | Windows client | Sysmon event 10 | Planned |
+| 5 | Web attack on DVWA (SQLi) | T1190 | DMZ Docker host | Web log + Wazuh rule | Planned |
+| 6 | Account discovery and AD enumeration | T1087 | Domain controller | Windows security events | Planned |
+| 7 | Lateral movement (pass-the-hash or PsExec) | T1021 | AD hosts | Windows events 4624/4648, Sysmon | Planned |
+| 8 | Honeypot interaction and port scan | T1046 | DMZ | Honeypot logs + firewall logs | Planned |
+| 9 | New local admin account | T1136.001 | Windows client | Windows event 4720/4732 | Planned |
+| 10 | Log clearing | T1070.001 | Windows client | Event 1102 | Planned |
