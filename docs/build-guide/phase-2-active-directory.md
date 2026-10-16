@@ -60,3 +60,34 @@ Use the SwiftOnSecurity `sysmonconfig-export.xml` as the starting configuration.
 
 - Test users share one throwaway lab password, entered at a prompt, never stored in files. The accounts are deliberately ordinary so attack scenarios have realistic targets.
 - Keep the VMs at 2 vCPU. If a VM freezes during install under the Windows hypervisor, drop it to 1 vCPU for the install, then raise it.
+
+## Progress
+
+| Step | Status |
+|---|---|
+| VMs created (`DC01`, `WIN11-CLIENT`) on `lab-ad` | Done |
+| Windows Server 2025 installed, promoted to domain controller of `soclab.local` | Done |
+| Weak lab password policy, OUs and 5 test users | Done |
+| Windows 11 client installed, local account, joined to the domain | Done |
+| Sysmon on both machines | To do |
+| Snapshots `03-phase2-domain-joined` | Done |
+
+## Verification results
+
+| Check | Result |
+|---|---|
+| Client resolves `soclab.local` through DC01 (192.168.30.10) | Pass |
+| `nltest /dsgetdc:soclab.local` on the client | Finds `DC01.soclab.local`, Kerberos, PDC/GC/LDAP/KDC |
+| Secure channel verification (`nltest /sc_verify`) | `NERR_Success` |
+| Computer accounts in AD | `DC01` (Domain Controllers), `WIN11-CLIENT` (`OU=Workstations,OU=SOCLab`) |
+| Domain functional level | Windows Server 2025 forest |
+| Both VMs only on the `lab-ad` internal network | Yes, no NAT or bridged adapters |
+
+## Lessons learned
+
+- **Two virtual CPUs freeze installers.** On this host VirtualBox runs on top of Windows' own hypervisor. Windows Server, Windows 11 and Kali all froze at an install restart with 2 vCPUs (black screen, cores at 100%, no disk writes). Installing on 1 vCPU fixed it. Windows Server and Kali are fine on 2 vCPUs once installed. Windows 11 setup requires 2 cores to start its requirement check, so it was started on 2, then switched to 1 after that check.
+- **Use a USB tablet pointer.** The default PS/2 mouse drifts and gets captured by the VM window. `--usb-xhci on --mouse usbtablet` (set in the VM scripts) gives exact pointer positions.
+- **Offline Windows 11 setup is blocked on newer builds.** Build 26300 removed offline local-account creation (error `OOBELOCAL`). Older or evaluation builds still offer "I don't have internet". A setup-disc registry flag (`BypassNRO`) exposes the offline link, but the account page itself is what newer builds refuse. If this reproduces, use an older Windows 11 build or the Enterprise evaluation ISO.
+- **Deliver scripts on a CD, not by typing.** Typing files into a slow VM console drops keystrokes. `scripts/make-tools-iso.ps1` builds an ISO of the scripts and any installers in `tools/`, which is attached to a VM as a CD drive. This also avoids giving the isolated VMs internet access.
+- **Display sleep looks like a freeze.** An idle VM's screen can go black. Press Shift in the VM, not Space, which can type into a focused field.
+- **Suspended VMs cannot be reconfigured.** If a VM shows "Saved", resume it and shut it down from inside Windows before changing hardware.
