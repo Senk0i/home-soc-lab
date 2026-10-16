@@ -12,7 +12,7 @@ A segmented, firewalled home security operations lab built to practice detection
 
 ## Hardware
 
-The whole lab runs on a single Framework laptop: AMD Ryzen AI 7 350 (8 cores / 16 threads), 64 GB RAM, Windows 11 Pro, with VirtualBox as the hypervisor. VMs are started in profiles so the host always keeps 20 GB or more free. See [docs/resource-plan.md](docs/resource-plan.md).
+The whole lab runs on a single Framework Laptop 13 (AMD Ryzen AI 300 Series): AMD Ryzen AI 7 350 (8 cores / 16 threads), 64 GB RAM, Windows 11 Pro, with VirtualBox as the hypervisor. VMs are started in profiles so the host always keeps 20 GB or more free. See [docs/resource-plan.md](docs/resource-plan.md).
 
 ## Architecture
 

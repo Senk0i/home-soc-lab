@@ -6,7 +6,7 @@ Goal: confirm the laptop can host the lab and decide on the hypervisor before bu
 
 | Check | Result | Verdict |
 |---|---|---|
-| CPU | AMD Ryzen AI 7 350, 8 cores / 16 threads (Framework laptop) | Good |
+| CPU | AMD Ryzen AI 7 350, 8 cores / 16 threads (Framework Laptop 13) | Good |
 | CPU virtualization (SVM) in firmware | Enabled | Good |
 | RAM | 64 GB | Good |
 | Free disk on C: | ~228 GB | Tight, use thin disks and delete old snapshots |
