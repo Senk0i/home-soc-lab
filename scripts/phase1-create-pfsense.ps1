@@ -12,10 +12,12 @@ Usage:
 #>
 param(
     [Parameter(Mandatory = $true)][string]$IsoPath,
-    [string]$BaseFolder = "$env:USERPROFILE\VirtualBox VMs"
+    # VM files stay inside the project folder (git-ignored): <repo>\vms
+    [string]$BaseFolder = (Join-Path (Split-Path $PSScriptRoot -Parent) "vms")
 )
 
 $ErrorActionPreference = 'Stop'
+New-Item -ItemType Directory -Force $BaseFolder | Out-Null
 $vbm = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
 
 if (-not (Test-Path $vbm)) { throw "VBoxManage not found. Install VirtualBox first." }
@@ -36,11 +38,6 @@ function New-PfSenseVM {
         $n = $i + 1
         & $vbm modifyvm $Name "--nic$n" intnet "--intnet$n" $Networks[$i] "--nictype$n" 82540EM "--cableconnected$n" on
     }
-
-    # Temporary NAT adapter: the Netgate Installer downloads pfSense over the internet.
-    # Disable it (VM Settings > Network > uncheck "Enable Network Adapter") after install.
-    $natNic = $Networks.Count + 1
-    & $vbm modifyvm $Name "--nic$natNic" nat "--nictype$natNic" 82540EM "--cableconnected$natNic" on
 
     $disk = Join-Path $BaseFolder "$Name\$Name.vdi"
     & $vbm createmedium disk --filename $disk --size 16384 --variant Standard | Out-Null

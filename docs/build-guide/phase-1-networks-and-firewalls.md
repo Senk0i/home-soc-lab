@@ -23,9 +23,9 @@ VirtualBox 7.2. Each zone is a named **internal network**. Internal networks liv
 
 ## Steps
 
-1. **Get the Netgate Installer.** pfSense CE is now installed through the Netgate Installer. From pfsense.org/download, the Download button goes to Netgate's store: pick **AMD64 ISO IPMI/Virtual Machines** (price $0.00) and complete the free checkout yourself. Save the ISO outside this repo, for example in `C:\ISOs`. ISOs are git-ignored.
-2. **Create both VMs** with `scripts/phase1-create-pfsense.ps1 -IsoPath <iso>`. It creates the VMs, the NIC-to-network mapping, a 16 GB thin disk each, a temporary NAT adapter (the installer downloads pfSense over the internet), and a blank snapshot.
-3. **Install pfSense-A.** Start it, choose **pfSense CE** in the installer, use the guided install (ZFS or UFS) on the 16 GB disk, then reboot and remove the ISO. After the install, **disable the NAT adapter** so the lab stays isolated.
+1. **Get the pfSense ISO.** pfSense CE 2.7.2 (full offline installer) is on Netgate's mirror: `https://atxfiles.netgate.com/mirror/downloads/pfSense-CE-2.7.2-RELEASE-amd64.iso.gz`. Verify it against the `.sha256` file next to it, then extract the `.gz`. Keep the ISO in Downloads, not in this repo. The newer 2.8.x line is only distributed through the Netgate Installer store checkout, which downloads packages during install and needs internet.
+2. **Create both VMs** with `scripts/phase1-create-pfsense.ps1 -IsoPath <iso>`. It creates the VMs inside this repo's git-ignored `vms/` folder, with the NIC-to-network mapping, a 16 GB thin disk each, and a blank snapshot. The lab networks are isolated, with no internet adapter.
+3. **Install pfSense-A.** Start it, accept the license, choose the guided install (ZFS or UFS) on the 16 GB disk, then reboot and remove the ISO.
 4. **Assign interfaces** from the console menu (option 1): `em0` = WAN, `em1` = LAN, `em2` = OPT1. Set addresses with option 2:
    - WAN: static `192.168.1.1/24`, no gateway
    - LAN: static `192.168.14.1/24`, DHCP off

@@ -1,4 +1,12 @@
 # VM disks, snapshots, installers
+vms/
+isos/
+*.vdi
+*.sav
+*.vbox
+*.vbox-prev
+Logs/
+*.gz
 *.vmdk
 *.vmx
 *.vmem
