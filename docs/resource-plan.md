@@ -1,6 +1,6 @@
 # Resource plan
 
-Host: Windows 11 Pro laptop, 8 cores / 16 threads, 64 GB RAM.
+Host: Framework laptop with an AMD Ryzen AI 7 350 (8 cores / 16 threads), 64 GB RAM, Windows 11 Pro.
 
 Everything cannot run at once. VMs are started by profile.
 

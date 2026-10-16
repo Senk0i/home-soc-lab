@@ -10,6 +10,10 @@ A segmented, firewalled home security operations lab built to practice detection
 - Automate one response workflow with Shuffle (SOAR).
 - Document every attack as an incident report.
 
+## Hardware
+
+The whole lab runs on a single Framework laptop: AMD Ryzen AI 7 350 (8 cores / 16 threads), 64 GB RAM, Windows 11 Pro, with VirtualBox as the hypervisor. VMs are started in profiles so the host always keeps 20 GB or more free. See [docs/resource-plan.md](docs/resource-plan.md).
+
 ## Architecture
 
 See [docs/architecture.md](docs/architecture.md) for the diagram and IP plan.
