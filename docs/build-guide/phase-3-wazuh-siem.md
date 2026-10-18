@@ -63,3 +63,15 @@ One alert fired 12 times: rule 92205, level 9, "Powershell process created an ex
 - Open the dashboard (`https://192.168.11.10`) from a lab machine and take a sanitized screenshot for the repo.
 - Snapshot the Wazuh VM and the Windows machines.
 - Phase 5 uses this pipeline to detect real attacks.
+
+## Lab convenience: auto sign-in and no idle lock (lab only)
+
+Idle VMs lock their screens, and a locked console blocks any scripted or demo work. `scripts/ad/06-lab-autologon.ps1` fixes that on a lab machine:
+
+- Turns on Windows' built-in `AutoAdminLogon`, so the VM signs itself in at boot.
+- Disables the idle lock, screen saver lock and the sign-in prompt on wake.
+- Asks for the password twice at run time and refuses a mismatch. The password is never passed on a command line or stored in the repo.
+
+Trade-off, stated plainly: Windows keeps the password in the registry in plain text for this feature. That is acceptable only on a throwaway, isolated lab VM with no real data, and must never be used on a real or internet-connected machine. `-Remove` undoes the auto sign-in.
+
+Tested: after running it on DC01 and restarting, the server signed itself in and reached the desktop with no input.
