@@ -1,0 +1,55 @@
+# DMZ services for the home SOC lab. LAB ONLY: both containers are deliberately
+# attackable and must never be exposed to a real network.
+#
+#   DVWA   (Damn Vulnerable Web Application)  http://192.168.14.10/   port 80
+#   Cowrie (SSH honeypot)                     ssh 192.168.14.10        port 22
+#
+# The database values below are DVWA's own published demo defaults (they match
+# config.inc.php.dist in the DVWA project), not personal credentials.
+
+volumes:
+  dvwa-db:
+  cowrie-log:
+
+networks:
+  dvwa:
+
+services:
+  dvwa:
+    image: ghcr.io/digininja/dvwa:latest
+    environment:
+      - DB_SERVER=db
+      # Start easy so every vulnerability is exploitable. Raise to medium, high
+      # or impossible to practise against stronger defences.
+      - DEFAULT_SECURITY_LEVEL=low
+    depends_on:
+      - db
+    networks:
+      - dvwa
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+  db:
+    image: docker.io/library/mariadb:10
+    environment:
+      - MYSQL_ROOT_PASSWORD=dvwa
+      - MYSQL_DATABASE=dvwa
+      - MYSQL_USER=dvwa
+      - MYSQL_PASSWORD=p@ssw0rd
+    volumes:
+      - dvwa-db:/var/lib/mysql
+    networks:
+      - dvwa
+    restart: unless-stopped
+
+  cowrie:
+    image: cowrie/cowrie:latest
+    # The honeypot listens on 2222 inside the container. Publish it as the
+    # standard SSH port 22 so scanners find it. (The real OS has no SSH server.)
+    ports:
+      - "22:2222"
+    volumes:
+      # JSON event log, read by the Wazuh agent on the host.
+      - cowrie-log:/cowrie/cowrie-git/var/log/cowrie
+    restart: unless-stopped

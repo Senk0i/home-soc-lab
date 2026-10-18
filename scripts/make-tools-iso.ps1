@@ -25,6 +25,15 @@ $vbm  = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
 $stage = Join-Path $env:TEMP ("labtools-" + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Force "$stage\ad", "$stage\tools" | Out-Null
 Copy-Item (Join-Path $repo 'scripts\ad\*') "$stage\ad" -Recurse
+
+# Linux DMZ host: its setup scripts plus the container definitions, side by side.
+$dmzSrc = Join-Path $repo 'scripts\dmz'
+if (Test-Path $dmzSrc) {
+    New-Item -ItemType Directory -Force "$stage\dmz" | Out-Null
+    Copy-Item "$dmzSrc\*" "$stage\dmz" -Recurse
+    $compose = Join-Path $repo 'configs\dmz\docker-compose.yml'
+    if (Test-Path $compose) { Copy-Item $compose "$stage\dmz" }
+}
 $toolsSrc = Join-Path $repo 'tools'
 if (Test-Path $toolsSrc) { Copy-Item "$toolsSrc\*" "$stage\tools" -Recurse }
 
