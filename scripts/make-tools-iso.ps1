@@ -26,6 +26,13 @@ $stage = Join-Path $env:TEMP ("labtools-" + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Force "$stage\ad", "$stage\tools" | Out-Null
 Copy-Item (Join-Path $repo 'scripts\ad\*') "$stage\ad" -Recurse
 
+# Detection content (Wazuh rules and decoders) for the SIEM server.
+$detSrc = Join-Path $repo 'detections\wazuh'
+if (Test-Path $detSrc) {
+    New-Item -ItemType Directory -Force "$stage\detections" | Out-Null
+    Copy-Item "$detSrc\*" "$stage\detections" -Recurse
+}
+
 # Linux DMZ host: its setup scripts plus the container definitions, side by side.
 $dmzSrc = Join-Path $repo 'scripts\dmz'
 if (Test-Path $dmzSrc) {

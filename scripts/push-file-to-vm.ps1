@@ -12,7 +12,9 @@ param(
     [Parameter(Mandatory = $true)][string]$Vm,
     [Parameter(Mandatory = $true)][string]$File,
     [Parameter(Mandatory = $true)][string]$Dest,
-    [int]$ChunkSize = 160
+    [int]$ChunkSize = 160,
+    # Target is a Linux console (GNU base64) instead of FreeBSD/pfSense
+    [switch]$Linux
 )
 
 $ErrorActionPreference = 'Stop'
@@ -34,6 +36,6 @@ for ($i = 0; $i -lt $b64.Length; $i += $ChunkSize) {
     $chunk = $b64.Substring($i, [Math]::Min($ChunkSize, $b64.Length - $i))
     Send-Line "echo -n $chunk >> $tmp"
 }
-Send-Line "b64decode -r $tmp > $Dest"
+if ($Linux) { Send-Line "base64 -d $tmp > $Dest" } else { Send-Line "b64decode -r $tmp > $Dest" }
 Send-Line "wc -c $Dest"
 Write-Host "Sent $($bytes.Length) bytes to ${Vm}:$Dest"

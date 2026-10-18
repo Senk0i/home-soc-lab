@@ -1,0 +1,101 @@
+<!--
+  Custom Wazuh rules for the Cowrie SSH honeypot running on Docker-DMZ.
+
+  HOW IT WORKS
+    Cowrie writes one JSON object per event to cowrie.json (for example
+    {"eventid":"cowrie.login.failed","src_ip":"192.168.1.150","username":"root",...}).
+    The Wazuh agent on Docker-DMZ ships those lines to the server, whose built-in JSON
+    decoder turns each key into a field. Wazuh's default ruleset has no rules for these
+    fields, so by default they are stored but never raise an alert. These rules add the
+    missing detections.
+
+  WHY A HONEYPOT IS HIGH-VALUE
+    Nothing legitimate ever connects to a honeypot. Any connection is suspicious, and
+    anything that logs in or runs commands is hostile by definition, so severity is
+    deliberately raised compared with a normal server.
+
+  INSTALL
+    Copy this file to /var/ossec/etc/rules/ on the Wazuh server (rule ids 100100 and up
+    are reserved for custom rules), test with /var/ossec/bin/wazuh-analysisd -t, then
+    restart wazuh-manager.
+-->
+<group name="cowrie,honeypot,">
+
+  <!-- Base rule: any Cowrie event. Level 0 means no alert by itself; it only anchors
+       the child rules below. -->
+  <rule id="100100" level="0">
+    <decoded_as>json</decoded_as>
+    <field name="eventid">^cowrie\.</field>
+    <description>Cowrie honeypot event.</description>
+  </rule>
+
+  <!-- Someone connected to the fake SSH port. T1046: Network Service Discovery. -->
+  <rule id="100101" level="5">
+    <if_sid>100100</if_sid>
+    <field name="eventid">^cowrie.session.connect$</field>
+    <description>Honeypot: new SSH connection from $(src_ip).</description>
+    <mitre>
+      <id>T1046</id>
+    </mitre>
+    <group>honeypot_connection,</group>
+  </rule>
+
+  <!-- A login attempt that was refused. T1110: Brute Force. -->
+  <rule id="100102" level="7">
+    <if_sid>100100</if_sid>
+    <field name="eventid">^cowrie.login.failed$</field>
+    <description>Honeypot: failed SSH login for user '$(username)' from $(src_ip).</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>honeypot_auth_failure,authentication_failures,</group>
+  </rule>
+
+  <!-- A login that the honeypot let through (it accepts weak guesses on purpose).
+       T1078: Valid Accounts, T1110: Brute Force. -->
+  <rule id="100103" level="10">
+    <if_sid>100100</if_sid>
+    <field name="eventid">^cowrie.login.success$</field>
+    <description>Honeypot: attacker logged in as '$(username)' from $(src_ip).</description>
+    <mitre>
+      <id>T1078</id>
+      <id>T1110</id>
+    </mitre>
+    <group>honeypot_auth_success,authentication_success,</group>
+  </rule>
+
+  <!-- The attacker typed a command inside the fake shell. T1059.004: Unix Shell. -->
+  <rule id="100104" level="12">
+    <if_sid>100100</if_sid>
+    <field name="eventid">^cowrie.command.input$</field>
+    <description>Honeypot: attacker ran command '$(input)' from $(src_ip).</description>
+    <mitre>
+      <id>T1059.004</id>
+    </mitre>
+    <group>honeypot_command,</group>
+  </rule>
+
+  <!-- The attacker tried to download a tool or payload. T1105: Ingress Tool Transfer. -->
+  <rule id="100105" level="13">
+    <if_sid>100100</if_sid>
+    <field name="eventid">^cowrie.session.file_download$</field>
+    <description>Honeypot: attacker tried to download a file from $(src_ip).</description>
+    <mitre>
+      <id>T1105</id>
+    </mitre>
+    <group>honeypot_download,</group>
+  </rule>
+
+  <!-- Five failed logins from the same address within a minute: automated password
+       guessing. T1110: Brute Force. -->
+  <rule id="100110" level="10" frequency="5" timeframe="60">
+    <if_matched_sid>100102</if_matched_sid>
+    <same_field>src_ip</same_field>
+    <description>Honeypot: SSH brute force, 5 failed logins in 60 seconds from $(src_ip).</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>honeypot_bruteforce,</group>
+  </rule>
+
+</group>
