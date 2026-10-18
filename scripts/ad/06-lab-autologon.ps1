@@ -37,11 +37,22 @@ if ($Remove) {
     return
 }
 
-$secure = Read-Host -AsSecureString "Password for $Domain\$User (typed here, never stored in the repo)"
-$bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-try { $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr) }
-finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
-if ([string]::IsNullOrEmpty($plain)) { throw 'An empty password was entered. Nothing was changed.' }
+function ConvertTo-PlainText([securestring]$s) {
+    $b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($s)
+    try { [Runtime.InteropServices.Marshal]::PtrToStringBSTR($b) }
+    finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b) }
+}
+
+# The text is hidden while typing, so ask twice to catch typos.
+$plain = $null
+foreach ($attempt in 1..3) {
+    $p1 = ConvertTo-PlainText (Read-Host -AsSecureString "Password for $Domain\$User (typed here, never stored in the repo)")
+    $p2 = ConvertTo-PlainText (Read-Host -AsSecureString 'Type it again to confirm')
+    if ($p1 -and $p1 -ceq $p2) { $plain = $p1; break }
+    Write-Warning 'The two entries did not match (or were empty). Try again.'
+}
+if (-not $plain) { throw 'No matching password entered. Nothing was changed.' }
+$p1 = $null; $p2 = $null
 
 # Auto sign-in
 Set-ItemProperty $winlogon -Name AutoAdminLogon    -Value '1'
