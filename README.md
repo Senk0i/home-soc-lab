@@ -37,7 +37,7 @@ The lab is fully isolated from the host's home network. Nothing is bridged and n
 | 1 | Virtual networks + pfSense firewalls + Kali | Done |
 | 2 | Active Directory + Sysmon | Done |
 | 3 | Wazuh SIEM + Sysmon + agents (see [guide](docs/build-guide/phase-3-wazuh-siem.md)) | Working, dashboard check next |
-| 4 | Kali + DMZ (DVWA, honeypot) | Not started |
+| 4 | DMZ targets: DVWA + Cowrie honeypot (see [guide](docs/build-guide/phase-4-dmz-targets.md)) | Working; Cowrie alert rule is the first Phase 5 task |
 | 5 | First attacks, detections, incident reports | Not started |
 | 6 | Splunk | Not started |
 | 7 | Shuffle SOAR automation | Not started |

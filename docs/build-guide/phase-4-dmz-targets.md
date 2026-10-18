@@ -42,3 +42,28 @@ Why Docker: each service ships with everything it needs, starts with one command
 - `ip addr show` takes a single device: pass one adapter, or omit it.
 - Quote characters get mangled when commands are typed into a console, so scripts delivered on a CD are more reliable than commands typed one line at a time.
 - A VM console screen that looks logged in may still be at `login:`. Check for the shell prompt before sending commands.
+
+## Verification results
+
+| Check | Result |
+|---|---|
+| Docker-DMZ has only an internal network adapter (`lab-dmz`) after setup | Verified for every lab VM with `scripts/remove-temp-nat.ps1` |
+| Kali (attacker net) reaches pfSense-A's DMZ address and the DMZ host (192.168.14.10) | Reachable |
+| Kali reaches the transit link (192.168.20.1) and the Wazuh server (192.168.11.10) | Blocked, as designed |
+| Port scan from Kali (`nmap -sV -p 22,80,3306`) | Sees the web and SSH ports; MariaDB (3306) is closed, so the database is not exposed |
+| DVWA through both firewalls | Login page served: "Login :: Damn Vulnerable Web Application (DVWA)" |
+| Honeypot on port 22 | Answers like an SSH server and refuses a passwordless attempt |
+| Wazuh agent `DOCKER-DMZ` | Enrolled and Active (after a server fix, below) |
+| Honeypot events becoming Wazuh alerts | **Not yet.** Wazuh has no default rule for Cowrie's JSON events, so they are collected but do not raise alerts. Writing that rule is the first task in Phase 5. |
+
+## Problems hit and fixes
+
+- **Agent stuck on "Never connected", enrolling over and over.** The Wazuh server had a stale registration for `DOCKER-DMZ`, so it kept rejecting new enrolment requests as a duplicate name. Fix: remove the stale agent (`manage_agents -r <id>`) and let the agent enroll fresh.
+- **Port 1514 not listening.** After the Wazuh VM was restarted, `wazuh-manager` had stopped partway through its start-up (`wazuh-remoted` not running), so no agent could send events. `systemctl restart wazuh-manager` fixed it. After restarting the lab, check `wazuh-control status` and `ss -tln | grep 1514` before debugging firewalls.
+- **Installer script bug.** `ip addr show` accepts one device; the script passed two. Fixed in `scripts/dmz/01-network-and-docker.sh`.
+
+## Next (Phase 5)
+
+1. Write a custom Wazuh decoder and rules for Cowrie events (login attempts, commands) under `detections/`, mapped to MITRE ATT&CK.
+2. Run the attack scenarios from `attack-scenarios/` against DVWA and the honeypot.
+3. Write an incident report for each.
