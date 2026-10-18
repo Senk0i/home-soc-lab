@@ -24,7 +24,7 @@ File: [`wazuh/cowrie_rules.xml`](wazuh/cowrie_rules.xml), rule IDs 100100 and up
 
 1. **Syntax:** `wazuh-analysisd -t` on the Wazuh server returned success, so the server accepted the rule file.
 2. **Rule logic, offline:** a fabricated Cowrie `cowrie.login.failed` event was fed to `wazuh-logtest`. It matched **rule 100102 at level 7**, with the description "Honeypot: failed SSH login for user 'root' from 192.168.1.150", mapped to Credential Access / Brute Force (T1110), and reported that an alert would be generated.
-3. **Live traffic:** pending. The scenario script `attack-scenarios/scripts/01-ssh-bruteforce-honeypot.sh` is the planned test, and the result is not yet recorded here.
+3. **Live traffic:** the brute-force scenario (`attack-scenarios/scripts/01-ssh-bruteforce-honeypot.sh`) produced 9 alerts from rules 100101, 100102 and 100103. Rule 100110 did not fire because only 2 guesses failed, and rules 100104 and 100105 were not exercised. See [IR-002](../incident-reports/IR-002-ssh-bruteforce-honeypot.md).
 
 ### Installing
 

@@ -4,7 +4,7 @@ Run each scenario only inside the isolated lab. Snapshot the target first. For e
 
 | # | Scenario | ATT&CK | Target | Expected detection | Status |
 |---|---|---|---|---|---|
-| 1 | SSH/RDP brute force | T1110 | DMZ host, AD client | Wazuh auth-failure rules | Planned |
+| 1 | SSH brute force against the honeypot | T1046, T1110 | DMZ honeypot | Rules 100101 to 100103 | Run, see [IR-002](../incident-reports/IR-002-ssh-bruteforce-honeypot.md) |
 | 2 | Encoded PowerShell execution | T1059.001 | Windows client | Sysmon event 1 + custom rule | Planned |
 | 3 | Scheduled task persistence | T1053.005 | Windows client | Sysmon / Windows event 4698 | Planned |
 | 4 | Credential dumping (LSASS access) | T1003.001 | Windows client | Sysmon event 10 | Planned |
