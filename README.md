@@ -35,8 +35,8 @@ The lab is fully isolated from the host's home network. Nothing is bridged and n
 |---|---|---|
 | 0 | Host check, repo, resource plan | Done |
 | 1 | Virtual networks + pfSense firewalls + Kali | Done |
-| 2 | Active Directory + Sysmon | Domain built and joined, Sysmon next |
-| 3 | Wazuh SIEM + agents | Not started |
+| 2 | Active Directory + Sysmon | Done |
+| 3 | Wazuh SIEM + Sysmon + agents (see [guide](docs/build-guide/phase-3-wazuh-siem.md)) | Working, dashboard check next |
 | 4 | Kali + DMZ (DVWA, honeypot) | Not started |
 | 5 | First attacks, detections, incident reports | Not started |
 | 6 | Splunk | Not started |
