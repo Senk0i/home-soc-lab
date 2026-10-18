@@ -18,10 +18,23 @@ $ErrorActionPreference = 'Stop'
 
 $vol = Get-Volume | Where-Object FileSystemLabel -eq 'LABTOOLS' | Select-Object -First 1
 if (-not $vol) { throw 'LABTOOLS CD not found. Attach labtools.iso to this VM first.' }
-$src = "$($vol.DriveLetter):\tools\sysmon"
+
+# Run from a local copy: the installer copies itself into C:\Windows and works
+# more reliably from a normal folder than from a CD.
+$src = 'C:\lab\sysmon'
+New-Item -ItemType Directory -Force $src | Out-Null
+Copy-Item "$($vol.DriveLetter):\tools\sysmon\*" $src -Force
 
 $exe = if ([Environment]::Is64BitOperatingSystem) { 'Sysmon64.exe' } else { 'Sysmon.exe' }
 $svc = $exe -replace '\.exe$', ''
+
+# A failed earlier attempt can leave a read-only copy in C:\Windows with no service,
+# which makes every retry fail with "Access is denied". Remove such a stale copy.
+$stale = Join-Path $env:SystemRoot $exe
+if ((Test-Path $stale) -and -not (Get-Service $svc -ErrorAction SilentlyContinue)) {
+    Write-Host "Removing stale $stale left by a previous failed install."
+    Remove-Item $stale -Force
+}
 
 if (Get-Service $svc -ErrorAction SilentlyContinue) {
     Write-Host "$svc already installed; updating configuration."

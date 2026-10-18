@@ -58,7 +58,12 @@ $fsi.Root.AddTree($stage, $false)
 $result = $fsi.CreateResultImage()
 if (Test-Path $out) { Remove-Item $out -Force }
 [IsoWriter]::Write($out, $result.ImageStream, $result.BlockSize, $result.TotalBlocks)
-Remove-Item $stage -Recurse -Force
+
+# The IMAPI objects keep the staged files open; release them before cleaning up.
+[void][Runtime.InteropServices.Marshal]::ReleaseComObject($result)
+[void][Runtime.InteropServices.Marshal]::ReleaseComObject($fsi)
+[GC]::Collect(); [GC]::WaitForPendingFinalizers()
+Remove-Item $stage -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host ("Built {0} ({1} KB)" -f $out, [math]::Round((Get-Item $out).Length / 1KB))
 
 if ($AttachTo) {
