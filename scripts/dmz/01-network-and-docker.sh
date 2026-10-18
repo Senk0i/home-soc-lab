@@ -37,7 +37,7 @@ chmod 600 /etc/netplan/60-lab.yaml
 for f in /etc/netplan/*.yaml; do [ "$f" = /etc/netplan/60-lab.yaml ] || mv "$f" "$f.disabled"; done
 netplan apply
 sleep 5
-ip -br addr show "$DMZ_IF" "$NAT_IF"
+ip -br addr show
 
 echo "== Checking internet access through the temporary adapter =="
 curl -fsS --max-time 15 -o /dev/null https://download.docker.com/linux/ubuntu/gpg && echo "internet OK"
