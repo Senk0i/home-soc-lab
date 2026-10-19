@@ -28,3 +28,9 @@ Run the Windows attack scenarios from `attack-scenarios/README.md` against `DC01
 ## 4. Housekeeping
 - Write `REBUILD.md`, a start-to-finish runbook so the lab can be rebuilt from the repo.
 - Add a `lab-start.ps1` and `lab-stop.ps1` for one-command start and shutdown.
+
+## Status when work paused (2026-10-19)
+
+- The honeypot dashboard is generated and ready (`detections/wazuh/dashboards/`) but **not yet imported** into Wazuh. The importer was cancelled at its password prompt.
+- To resume: all VMs were saved with VirtualBox "Save state", so starting them restores them exactly as they were. Start order: firewalls, Wazuh, Docker-DMZ, Kali. Check that `wazuh-control status` shows `remoted` and `analysisd` running before trusting alerts.
+- Next action: on the Wazuh VM run `sudo mount /dev/sr0 /mnt/tools` (if not mounted) and `bash /mnt/tools/detections/dashboards/import-dashboard.sh`, then open Dashboards > "Honeypot: live attack view".
