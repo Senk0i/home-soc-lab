@@ -14,3 +14,6 @@ Run each scenario only inside the isolated lab. Snapshot the target first. For e
 | 8 | Honeypot interaction and port scan | T1046 | DMZ | Honeypot logs + firewall logs | Planned |
 | 9 | New local admin account | T1136.001 | Windows client | Windows event 4720/4732 | Planned |
 | 10 | Log clearing | T1070.001 | Windows client | Event 1102 | Planned |
+| 11 | Longer SSH brute force (triggers the volume rule) | T1110 | DMZ honeypot | Honeypot rule 100110 (5 failures in 60 seconds) | Planned |
+| 12 | Interactive honeypot session (commands and downloads) | T1059.004, T1105 | DMZ honeypot | Honeypot rules 100104, 100105 | Planned |
+| 13 | LLM-driven pentest run with ARTEX against DVWA | T1595, T1190 | DMZ web app | DVWA access logs (Wazuh), plus honeypot rules if ARTEX probes SSH | Planned, see [docs/attacks/artex.md](../docs/attacks/artex.md) |

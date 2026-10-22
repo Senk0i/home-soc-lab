@@ -25,7 +25,10 @@ Running list of what to do when the lab is next started.
 ## 3. Windows-side detections
 Run the Windows attack scenarios from `attack-scenarios/README.md` against `DC01` and `WIN11-CLIENT` and write incident reports.
 
-## 4. Housekeeping
+## 4. ARTEX LLM-driven pentest (scenario 13)
+Installed on Kali in a Docker Compose stack. See [docs/attacks/artex.md](attacks/artex.md). Pending: aim it at DVWA, run a scoped test, and write `incident-reports/IR-003-artex-dvwa.md` from the results.
+
+## 5. Housekeeping
 - Write `REBUILD.md`, a start-to-finish runbook so the lab can be rebuilt from the repo.
 - Add a `lab-start.ps1` and `lab-stop.ps1` for one-command start and shutdown.
 
